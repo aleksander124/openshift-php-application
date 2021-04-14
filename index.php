@@ -33,7 +33,7 @@
                     <input type="text" name="login" id="login">
                 </div>
                 <div class="form--input-box">
-                    <label for="password">Hasło poprawka</label>
+                    <label for="password">Hasło</label>
                     <input type="password" name="haslo" id="password">
                 </div>
                 <div class="form--options">
