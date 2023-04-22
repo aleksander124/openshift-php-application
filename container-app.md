@@ -13,9 +13,9 @@
 
 ### Run from container to install mysqli
 ```docker exec -ti <your-php-container> /bin/bash```
->> docker-php-ext-install mysqli 
->> docker-php-ext-enable mysqli
->> apachectl restart
+> docker-php-ext-install mysqli </br>
+> docker-php-ext-enable mysqli </br>
+> apachectl restart </br>
 
 ### Add to docker file with login app to auto install mysqli
 ```RUN docker-php-ext-install mysqli```
