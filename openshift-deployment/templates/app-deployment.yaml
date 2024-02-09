@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.app.application.name }}
+  namespace: {{ .Values.app.application.namespace }}
+  labels:
+    app: {{ .Values.app.application.name }}
+    app.kubernetes.io/component: {{ .Values.app.application.name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Values.app.application.name }}
+    app.kubernetes.io/part-of: {{ .Values.app.application.name }}-app
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app.application.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.application.name }}
+    spec:
+      containers:
+        - name: {{ .Values.app.application.name }}
+          image: {{ .Values.app.application.image.repository }}:{{ .Values.app.application.image.tag }}
+          ports:
+            - containerPort: {{ .Values.app.application.containerPort }}
+          resources: {}
+          terminationMessagePolicy: File
+          imagePullPolicy: {{ .Values.app.application.image.pullPolicy }}
+      restartPolicy: Always
+      terminationGracePeriodSeconds: {{ .Values.app.application.terminationGracePeriodSeconds }}
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+        - name: {{ .Values.app.application.imagePullSecrets }}

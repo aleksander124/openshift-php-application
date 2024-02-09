@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.app.application.name }}-service
+  namespace: {{ .Values.app.application.namespace }}
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.app.service.servicePort }}
+      targetPort: {{ .Values.app.service.targetPort }}
+  internalTrafficPolicy: {{ .Values.app.service.internalTrafficPolicy }}
+  type: {{ .Values.app.service.serviceType }}
+  ipFamilyPolicy: {{ .Values.app.service.ipFamilyPolicy }}
+  sessionAffinity: {{ .Values.app.service.sessionAffinity }}
+  selector:
+    app: {{ .Values.app.application.name }}

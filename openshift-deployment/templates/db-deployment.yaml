@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.db.application.name }}
+  namespace: {{ .Values.db.application.namespace }}
+  labels:
+    app: {{ .Values.db.application.name }}
+    app.kubernetes.io/component: {{ .Values.db.application.name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Values.db.application.name }}
+    app.kubernetes.io/part-of: {{ .Values.db.application.name }}-app
+spec:
+  replicas: {{ .Values.db.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.db.application.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.db.application.name }}
+    spec:
+      containers:
+        - name: {{ .Values.db.application.name }}
+          image: {{ .Values.db.application.image.repository }}:{{ .Values.db.application.image.tag }}
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: {{ .Values.db.rootPassword }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.db.databaseName }}
+            - name: MYSQL_USER
+              value: {{ .Values.db.username }}
+            - name: MYSQL_PASSWORD
+              value: {{ .Values.db.password }}
+          ports:
+            - containerPort: {{ .Values.db.application.containerPort }}
+          resources: {}
+          terminationMessagePolicy: File
+          imagePullPolicy: {{ .Values.db.application.image.pullPolicy }}
+          volumeMounts:
+            - name: mariadb-data
+              mountPath: /var/lib/mysql
+      restartPolicy: Always
+      terminationGracePeriodSeconds: {{ .Values.db.application.terminationGracePeriodSeconds }}
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+        - name: {{ .Values.db.application.imagePullSecrets }}
+      volumes:
+        - name: mariadb-data
+          persistentVolumeClaim:
+            claimName: mariadb-pvc

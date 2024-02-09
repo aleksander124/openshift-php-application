@@ -1,0 +1,17 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.app.application.name }}-route
+  namespace: {{ .Values.app.application.namespace }}
+spec:
+  host: {{ .Values.app.application.name }}-{{ .Values.app.application.namespace }}.apps.openshift.mednet.world
+  path: /
+  to:
+    kind: Service
+    name: {{ .Release.Name }}-{{ .Values.app.application.name }}-service
+  port:
+    targetPort: http
+  tls:
+    termination: {{ .Values.app.route.tlsTermination }}
+    insecureEdgeTerminationPolicy: {{ .Values.app.route.insecureEdgeTerminationPolicy }}
+  wildcardPolicy: None

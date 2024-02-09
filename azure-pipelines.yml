@@ -1,0 +1,75 @@
+name: '$(BuildDefinitionName)_$(date:yyyyMMdd)$(rev:.r)'
+
+trigger:
+- master
+
+variables:
+  - name: imageRepositoryApp
+    value: 'mcov-pl/devops/php-login-site'
+  - name: dockerfilePathApp
+    value: 'my-app/Dockerfile'
+  - name: imageRepositoryDb
+    value: 'mcov-pl/devops/php-login-site-db'
+  - name: dockerfilePathDb
+    value: 'my-database/Dockerfile'
+  - name: dockerRegistryServiceConnection
+    value: 'registry'
+  - name: project-name-dev
+    value: 'ado-openshift'
+
+stages:
+- stage: Build
+  displayName: Build and Push Image
+  pool:
+    name: Azure Pipelines
+  jobs:
+  - job: BuildMyApp
+    displayName: Build and Push Job
+    steps:
+    - task: Docker@2
+      displayName: 'Build App Docker Image'
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepositoryApp)
+        dockerfile: $(dockerfilePathApp)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(Build.BuildId)
+          latest
+  - job: BuildAndPushJob
+    displayName: Build and Push Job
+    steps:
+      - task: Docker@2
+        displayName: 'Build and push Docker image for Database'
+        inputs:
+          command: buildAndPush
+          repository: $(imageRepositoryDb)
+          dockerfile: $(dockerfilePathDb)
+          containerRegistry: $(dockerRegistryServiceConnection)
+          tags: |
+            $(Build.BuildId)
+            latest
+
+- stage: DeployToOpenshift
+  displayName: Deploy to Openshift
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+    - job: DeployDevJob
+      displayName: Deploy to Openshift
+      pool:
+        name: Internal
+      steps:
+      - task: HelmDeploy@0
+        displayName: Deploy to Openshift cluster
+        inputs:
+          namespace: '$(project-name-dev)'
+          kubernetesServiceConnection: 'openshift-new'
+          command: 'upgrade'
+          chartType: 'Name'
+          valueFile: '$(Build.SourcesDirectory)/openshift-deployment/values.yaml'
+          chartName: '$(Build.SourcesDirectory)/openshift-deployment'
+          arguments: '--install --namespace $(project-name-dev)'
+          releaseName: 'openshift-deployment-site'
+
+# TODO: Multi stage deployment to more projects in same time

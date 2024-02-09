@@ -1,0 +1,56 @@
+app:
+  replicaCount: 1
+
+  application:
+    name: php-login-site
+    namespace: 'ado-openshift'
+    image:
+      repository: mcovglobal.azurecr.io/mcov-pl/devops/php-login-site
+      tag: latest
+      pullPolicy: Always
+
+    containerPort: 8080
+    terminationGracePeriodSeconds: 30
+
+    imagePullSecrets: azure-acr-secret
+
+  service:
+    servicePort: 8080
+    targetPort: 8080
+    internalTrafficPolicy: Cluster
+    serviceType: ClusterIP
+    ipFamilyPolicy: SingleStack
+    sessionAffinity: None
+
+  route:
+    tlsTermination: edge
+    insecureEdgeTerminationPolicy: Redirect
+
+db:
+  replicaCount: 1
+
+  application:
+    name: php-login-site-db
+    namespace: 'ado-openshift'
+    image:
+      repository: mcovglobal.azurecr.io/mcov-pl/devops/php-login-site-db
+      tag: latest
+      pullPolicy: Always
+
+    containerPort: 3306
+    terminationGracePeriodSeconds: 30
+
+    imagePullSecrets: azure-acr-secret
+
+  service:
+    servicePort: 3306
+    targetPort: 3306
+    internalTrafficPolicy: Cluster
+    serviceType: ClusterIP
+    ipFamilyPolicy: SingleStack
+    sessionAffinity: None
+
+  rootPassword: root
+  databaseName: mydatabase
+  username: admin
+  password: admin
