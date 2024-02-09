@@ -1,7 +1,7 @@
 FROM php:7.4-apache
 
 #copy application inside container
-COPY ./app /var/www/html
+COPY app /var/www/html
 
 # set workdir to html site
 WORKDIR /var/www/html
