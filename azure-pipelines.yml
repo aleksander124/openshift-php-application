@@ -5,11 +5,11 @@ trigger:
 
 variables:
   - name: imageRepositoryApp
-    value: 'mcov-pl/devops/php-login-site'
+    value: ''
   - name: dockerfilePathApp
     value: 'my-app/Dockerfile'
   - name: imageRepositoryDb
-    value: 'mcov-pl/devops/php-login-site-db'
+    value: ''
   - name: dockerfilePathDb
     value: 'my-database/Dockerfile'
   - name: dockerRegistryServiceConnection
