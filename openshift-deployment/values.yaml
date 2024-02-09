@@ -5,7 +5,7 @@ app:
     name: php-login-site
     namespace: 'ado-openshift'
     image:
-      repository: mcovglobal.azurecr.io/mcov-pl/devops/php-login-site
+      repository: <APP REPO HERE>
       tag: latest
       pullPolicy: Always
 
@@ -33,7 +33,7 @@ db:
     name: php-login-site-db
     namespace: 'ado-openshift'
     image:
-      repository: mcovglobal.azurecr.io/mcov-pl/devops/php-login-site-db
+      repository: <DB REPO HERE>
       tag: latest
       pullPolicy: Always
 
