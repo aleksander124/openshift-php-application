@@ -13,11 +13,16 @@ jobs:
       APP_IMAGE: "quay.io/aleksander124/openshift-php-front"
       DB_IMAGE: "quay.io/aleksander124/openshift-php-db"
       IMAGE_TAG_LATEST: "latest"
-      IMAGE_TAG_DATE_BUILD: ${{ format('{0:yyyyMMdd}.{1}', github.run_startedAt, github.run_number) }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Set date and build number
+        id: date_and_build
+        run: |
+          echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+          echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
 
       - name: Login to Quay.io
         run: |
@@ -25,10 +30,10 @@ jobs:
 
       - name: Build and push Docker images
         run: |
-          docker build -t $APP_IMAGE:$IMAGE_TAG_LATEST -t $APP_IMAGE:$IMAGE_TAG_DATE_BUILD ./my-app
+          docker build -t $APP_IMAGE:$DATE.$BUILD_NUMBER -t $APP_IMAGE:$IMAGE_TAG_LATEST ./my-app
+          docker push $APP_IMAGE:$DATE.$BUILD_NUMBER
           docker push $APP_IMAGE:$IMAGE_TAG_LATEST
-          docker push $APP_IMAGE:$IMAGE_TAG_DATE_BUILD
           
-          docker build -t $DB_IMAGE:$IMAGE_TAG_LATEST -t $DB_IMAGE:$IMAGE_TAG_DATE_BUILD ./my-database
+          docker build -t $DB_IMAGE:$DATE.$BUILD_NUMBER -t $DB_IMAGE:$IMAGE_TAG_LATEST ./my-database
+          docker push $DB_IMAGE:$DATE.$BUILD_NUMBER
           docker push $DB_IMAGE:$IMAGE_TAG_LATEST
-          docker push $DB_IMAGE:$IMAGE_TAG_DATE_BUILD
