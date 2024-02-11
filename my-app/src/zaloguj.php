@@ -1,50 +1,40 @@
 <?php
-
 session_start();
-if ((!isset($_POST['login'])) || (!isset($_POST['haslo']))){
+
+if (!isset($_POST['login']) || !isset($_POST['haslo'])){
     header('Location: index.php');
     exit();
 }
 
 require_once "connect.php";
 
-$polaczenie = @new mysqli($host, $db_user, $db_password, $db_name);
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$db_name", $db_user, $db_password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-if ($polaczenie->connect_errno!=0){
-    echo "Error: ".$polaczenie->connect_errno;
-}
-else{
-    $login = $_POST['login'];
-    $haslo = $_POST['haslo'];
+    $login = htmlentities($_POST['login'], ENT_QUOTES, "UTF-8");
 
-    $login = htmlentities($login, ENT_QUOTES, "UTF-8");
+    $stmt = $pdo->prepare("SELECT * FROM uzytkownicy WHERE user=:login");
+    $stmt->bindParam(':login', $login);
+    $stmt->execute();
+    $user = $stmt->fetch();
 
-
-    if ($rezultat = @$polaczenie->query(
-        sprintf("SELECT * FROM uzytkownicy WHERE user='%s'",
-            mysqli_real_escape_string($polaczenie,$login)))){
-        $ilu_userow = $rezultat->num_rows;
-        if($ilu_userow>0){
-            $wiersz = $rezultat->fetch_assoc();
-            if(password_verify($haslo, $wiersz['pass'])){
-
-                $_SESSION['zalogowany'] = true;
-
-                $_SESSION['id'] = $wiersz['id'];
-                $_SESSION['user'] = $wiersz['user'];
-                unset($_SESSION['blad']);
-                $rezultat->free_result();
-                header('Location: home.php');
-            }else{
-                $_SESSION['blad'] = '<span>Nieprawidłowy login lub hasło!</span>';
-                header('Location: index.php');
-            }
-        } else {
-            $_SESSION['blad'] = '<span>Nieprawidłowy login lub hasło!</span>';
-            header('Location: index.php');
-        }
+    if ($user && password_verify($_POST['haslo'], $user['pass'])) {
+        $_SESSION['zalogowany'] = true;
+        $_SESSION['id'] = $user['id'];
+        $_SESSION['user'] = $user['user'];
+        unset($_SESSION['blad']);
+        header('Location: home.php');
+        exit();
+    } else {
+        $_SESSION['blad'] = '<span>Nieprawidłowy login lub hasło!</span>';
+        header('Location: index.php');
+        exit();
     }
-
-    $polaczenie->close();
+} catch(PDOException $e) {
+    // Log the error and display a generic message to the user
+    error_log("Database error: " . $e->getMessage());
+    $_SESSION['blad'] = '<span>Wystąpił błąd logowania. Proszę spróbować ponownie.</span>';
+    header('Location: index.php');
+    exit();
 }
-?>
