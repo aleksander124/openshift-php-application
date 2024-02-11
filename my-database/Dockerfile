@@ -1,4 +1,5 @@
-FROM mysql:8.0
+# Stage 1: Package update
+FROM mysql:latest
 
 # Set the user to 'root' to avoid permission issues in OpenShift
 USER root
