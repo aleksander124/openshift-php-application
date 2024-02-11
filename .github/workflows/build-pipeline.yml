@@ -13,7 +13,7 @@ jobs:
       APP_IMAGE: "quay.io/aleksander124/openshift-php-front"
       DB_IMAGE: "quay.io/aleksander124/openshift-php-db"
       IMAGE_TAG_LATEST: "latest"
-      IMAGE_TAG_DATE_BUILD: ${{ format('{0}-{1}', github.run_number, github.run_id) }}
+      IMAGE_TAG_DATE_BUILD: ${{ format('{0,date,yyyyMMdd}.{1}', github.run_startedAt, github.run_number) }}
 
     steps:
       - name: Checkout code
