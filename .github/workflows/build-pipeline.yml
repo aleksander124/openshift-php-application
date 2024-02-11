@@ -1,0 +1,34 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    env:
+      APP_IMAGE: "quay.io/aleksander124/openshift-php-front"
+      DB_IMAGE: "quay.io/aleksander124/openshift-php-db"
+      IMAGE_TAG_LATEST: "latest"
+      IMAGE_TAG_DATE_BUILD: ${{ format('{0}-{1}', github.run_number, github.run_id) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to Quay.io
+        run: |
+          docker login -u="aleksander124+github_pipelines" -p=${{ secrets.PUSH_SECRET }} quay.io
+
+      - name: Build and push Docker images
+        run: |
+          docker build -t $APP_IMAGE:$IMAGE_TAG_LATEST -t $APP_IMAGE:$IMAGE_TAG_DATE_BUILD ./my-app
+          docker push $APP_IMAGE:$IMAGE_TAG_LATEST
+          docker push $APP_IMAGE:$IMAGE_TAG_DATE_BUILD
+          
+          docker build -t $DB_IMAGE:$IMAGE_TAG_LATEST -t $DB_IMAGE:$IMAGE_TAG_DATE_BUILD ./my-database
+          docker push $DB_IMAGE:$IMAGE_TAG_LATEST
+          docker push $DB_IMAGE:$IMAGE_TAG_DATE_BUILD
