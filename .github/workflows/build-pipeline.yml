@@ -15,8 +15,8 @@ jobs:
       IMAGE_TAG_LATEST: "latest"
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Set date and build number
         id: date_and_build
