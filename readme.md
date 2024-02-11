@@ -88,3 +88,7 @@ The last change we need to make is in the `values.yaml` file and it's `imagePull
 ### Run you pipeline
 Now if you have all done you can push your code to repo and start your pipeline. Note if you are using self-hosted azure agent remember to configure it properly. You need to install all required packages for example helm chart or kubectl in correct version.
 [create self-hosted azure agent](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/agents?view=azure-devops&tabs=yaml%2Cbrowser)
+
+[![Front app image on Quay](https://quay.io/repository/aleksander124/openshift-php-front/status "Docker Repository on Quay")](https://quay.io/repository/aleksander124/openshift-php-front)
+
+[![Database image on Quay](https://quay.io/repository/aleksander124/openshift-php-db/status "Docker Repository on Quay")](https://quay.io/repository/aleksander124/openshift-php-db)
