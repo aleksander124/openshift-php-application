@@ -14,12 +14,15 @@ try {
 
     $login = htmlentities($_POST['login'], ENT_QUOTES, "UTF-8");
 
+    $login = htmlentities($_POST['login'], ENT_QUOTES, "UTF-8");
+    $unslashed_password = stripslashes($_POST['haslo']); // Unslash the password
+
     $stmt = $pdo->prepare("SELECT * FROM uzytkownicy WHERE user=:login");
     $stmt->bindParam(':login', $login);
     $stmt->execute();
     $user = $stmt->fetch();
 
-    if ($user && password_verify($_POST['haslo'], $user['pass'])) {
+    if ($user && password_verify($unslashed_password, $user['pass'])) { // Use the unslashed password for verification
         $_SESSION['zalogowany'] = true;
         $_SESSION['id'] = $user['id'];
         $_SESSION['user'] = $user['user'];
