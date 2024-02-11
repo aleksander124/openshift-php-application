@@ -1,12 +1,21 @@
-FROM php:7.4-apache
+# Stage 1: Update packages
+FROM php:8.3-apache AS base
 
-#copy application inside container
+RUN apt-get update && \
+    apt-get install -y \
+        # packages to be updated go here \
+    && apt-get clean
+
+# Stage 2: Build the code
+FROM base AS final
+
+# Copy application inside container
 COPY src /var/www/html
 
-# set workdir to html site
+# Set workdir to html site
 WORKDIR /var/www/html
 
-# enable php mysqli to connect to database
+# Enable php mysqli to connect to database
 RUN docker-php-ext-install mysqli
 
 # Configure Apache to listen on port 8080
