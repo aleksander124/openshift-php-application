@@ -6,7 +6,7 @@ LABEL maintainer="Aleksander Okon"
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    && apt-get clean
+    apt-get clean
 
 # Stage 2: Build the code
 FROM base AS final
