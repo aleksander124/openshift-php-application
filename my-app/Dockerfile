@@ -1,9 +1,11 @@
 # Stage 1: Update packages
 FROM php:8.3-apache AS base
 
+# Add label to provide metadata
+LABEL maintainer="Aleksander Okon"
+
 RUN apt-get update && \
-    apt-get install -y \
-        # packages to be updated go here \
+    apt-get upgrade -y && \
     && apt-get clean
 
 # Stage 2: Build the code
